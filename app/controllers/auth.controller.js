@@ -1,5 +1,6 @@
 const userSvc = require("../services/user.service");
 const bcrypt = require("bcryptjs");
+const sendMail = require("../services/mail.service");
 
 class AuthController{
     //LOGIN PROCESS
@@ -44,6 +45,14 @@ class AuthController{
 
             //PASSWORD BCRYPT
             data.password = await bcrypt.hash(data.password, 10);
+
+            //FOR EMAIL
+            sendMail({
+                from: 'noreply@gmail.com',
+                to: data.email, 
+                subject: "ACCOUNT VERIFICATION", 
+                text: "Your account has been registered", 
+              });
             
             res.json({
                 result: validregister, 

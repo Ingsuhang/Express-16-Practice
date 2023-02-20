@@ -1,25 +1,28 @@
 const nodemailer = require("nodemailer");
 
-const sendMail = async () => {
+const sendMail = async (data) => {
     try{
         let transporter = nodemailer.createTransport({
-            host: "smtp.ethereal.email",
-            port: 587,
-            secure: false, 
+            host: "sandbox.smtp.mailtrap.io",
+            port: 2525,
             auth: {
-              user: testAccount.user, 
-              pass: testAccount.pass, 
-            },
-          });
+              user: "5f823027173a50", 
+              pass: "60104226e464ea", 
+            }})
 
         let info = await transporter.sendMail({
-            from: '"Fred Foo 👻" <foo@example.com>',
-            to: "bar@example.com, baz@example.com", 
-            subject: "Hello ✔", 
-            text: "Hello world?", 
-            html: "<b>Hello world?</b>", 
-          });
-
+            from: data.from,
+            to: data.to, 
+            subject: data.subject, 
+            text: data.textMessage ?? null, 
+            html: data.message, 
+          })
+          if(info){
+            return true;
+          }else
+          {
+            throw "EMAIL NOT SEND!";
+          }
     }
     catch(err){
         console.log(err)
