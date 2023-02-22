@@ -4,7 +4,7 @@ const sendMail = async (data) => {
     try{
         let transporter = nodemailer.createTransport({
             host: "sandbox.smtp.mailtrap.io",
-            port: 2525,
+            port: 587,
             auth: {
               user: "5f823027173a50", 
               pass: "60104226e464ea", 

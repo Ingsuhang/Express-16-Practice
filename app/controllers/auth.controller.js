@@ -46,7 +46,11 @@ class AuthController{
             //PASSWORD BCRYPT
             data.password = await bcrypt.hash(data.password, 10);
 
-            //FOR EMAIL
+            //DB CONNECTION
+            let response = await userSvc.registerUser(data);
+
+             if(response){
+            // FOR EMAIL
             sendMail({
                 from: 'noreply@gmail.com',
                 to: data.email, 
@@ -60,6 +64,9 @@ class AuthController{
                 msg: "USER REGISTERED",
                 meta: null
             })
+             }else{
+                throw "UNABLE TO REGISTER!!!"
+             }
         }
         catch(err){
             next({status: 400, msg: err});

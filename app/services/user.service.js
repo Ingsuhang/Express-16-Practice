@@ -1,4 +1,5 @@
 const Joi = require('joi');
+const { MongoClient } = require('mongodb');
 
 //USER VALIDATION USING JOI
 class UserService {
@@ -36,6 +37,23 @@ class UserService {
         catch(err){
           let msg = err;
           throw msg;
+        }
+    }
+
+    registerUser = async (data) => {
+        try{
+            //connect
+            let client = await MongoClient.connect("mongodb://127.0.0.1:27017");
+
+            //select db
+            let db = client.db("express-16");
+                        
+            // query
+            let response = await db.collection("users").insertOne(data)
+            return response;
+        }
+        catch(err){
+            throw err;
         }
     }
 }
