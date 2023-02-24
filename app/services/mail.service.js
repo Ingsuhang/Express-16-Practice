@@ -1,14 +1,9 @@
 const nodemailer = require("nodemailer");
+const AppConstant = require("../../config/constant");
 
 const sendMail = async (data) => {
     try{
-        let transporter = nodemailer.createTransport({
-            host: "sandbox.smtp.mailtrap.io",
-            port: 587,
-            auth: {
-              user: "5f823027173a50", 
-              pass: "60104226e464ea", 
-            }})
+        let transporter = nodemailer.createTransport(AppConstant.SMTP);
 
         let info = await transporter.sendMail({
             from: data.from,

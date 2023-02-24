@@ -1,6 +1,7 @@
 const express = require("express");
 const errorhandle = require("./app/middleware/errorhandler.middleware");
 const app = express();
+require("./config/db.config");
 
 //BODY PARSER
 app.use(express.json());

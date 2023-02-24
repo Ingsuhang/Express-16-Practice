@@ -1,8 +1,9 @@
 const Joi = require('joi');
 const { MongoClient } = require('mongodb');
+const MongoDBService = require('./mongoDB.service');
 
-//USER VALIDATION USING JOI
-class UserService {
+//USER VALIDATION USING JOI &
+class UserService extends MongoDBService {
     validateLogin = async (data) => {
         try{
             let loginValidationschema = Joi.object({
@@ -56,6 +57,42 @@ class UserService {
             throw err;
         }
     }
+
+    getUserByEmail = async (email) => {
+        try{
+            let user = await this.db.collection("users").findOne({
+                name: email
+            });
+            return user;
+        }
+        catch(err){
+            throw err
+        }
+    }
+    getUserById = async (id) => {
+        try{
+            let user = await this.db.collection("users").findOne({
+                _id: new ObjectId(id)
+            });
+            delete user.password;
+            return user;
+        } catch(err) {
+            throw err;
+        }
+    }
+    updateUserById = async (id, data) => {
+        try {
+            let response = await this.db.collection('users').updateOne({
+                _id: new ObjectId(id)
+            }, {
+                $set: data
+            })
+            return response;
+        } catch(err) {
+            throw err
+        }
+
+    }   
 }
 
 const userSvc = new UserService;

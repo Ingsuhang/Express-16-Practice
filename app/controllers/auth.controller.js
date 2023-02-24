@@ -1,6 +1,8 @@
 const userSvc = require("../services/user.service");
 const bcrypt = require("bcryptjs");
 const sendMail = require("../services/mail.service");
+const jwt = require("jsonwebtoken");
+const AppConstant = require("../../config/constant");
 
 class AuthController{
     //LOGIN PROCESS
@@ -8,22 +10,36 @@ class AuthController{
         try{
             //API FROM USER BODY
             let data = req.body;
-            let validlogin = await userSvc.validateLogin(data);
-            //CREATING MANUAL ENCRYPT PASS AND TESTING
-            let user = {
-                _id: 1, 
-                name: "Insang Limbu",
-                email: "Insang@gmail.com",
-                password: "$2a$10$c0mHEVN0RAGw1XfX7p2M5.6hxzjrlt3Ss3kHYY3dpArTaIyI.ZOyi",
-                role: "admin",
-                status: "active",
-                address: "Kathmandu",
-                phone: "+977 9801234567"
-            }
+            
+            await userSvc.validateLogin(data);
+            
+            let user = await userSvc.getUserByEmail(data.username);
+
+            if(user){
+            //COMPARING DATA AND PASS
             if(bcrypt.compareSync(data.password,user.password)){
-                res.json({result:user})
+
+            //JSON WEB TOKEN
+            let token = jwt.sign({userId: user._id},AppConstant.JWT_SECRET)
+            
+            res.json({
+                result: 
+                {
+                    userDetail: user,
+                    token: token
+                }, 
+                status: true, 
+                msg: "Login data fetched",
+                meta: null
+            })
             }
-            res.json(validlogin);
+            else {
+                //PASSWORD DOESN"T MATCH
+                throw "Credentials does not match."
+            }
+            } else {
+            throw "Credentials does not match."
+            }
         }
         catch(err){
             console.log("ERROR: ",err);
@@ -49,7 +65,7 @@ class AuthController{
             //DB CONNECTION
             let response = await userSvc.registerUser(data);
 
-             if(response){
+            if(response){
             // FOR EMAIL
             sendMail({
                 from: 'noreply@gmail.com',
